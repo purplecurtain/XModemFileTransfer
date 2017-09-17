@@ -1,10 +1,10 @@
 //============================================================================
 //
-//% Student Name 1: student1
-//% Student 1 #: 123456781
-//% Student 1 userid (email): stu1 (stu1@sfu.ca)
+//% Student Name 1: Nathan Tannar
+//% Student 1 #: 301258264
+//% Student 1 userid (email): ntannar@sfu.ca
 //
-//% Student Name 2: student2
+//% Student Name 2: Shahira Afrin
 //% Student 2 #: 123456782
 //% Student 2 userid (email): stu2 (stu2@sfu.ca)
 //
