@@ -142,7 +142,7 @@ crc16ns (uint16_t* crc16nsP, uint8_t* buf)
 //			 tells the sender to send the same block it just sent over again.
 
 		 // ********* The next line needs to be changed ***********
-		 *crc16nsP = 0;
+		 *crc16nsP = oldcrc;
 
 		 //sendline((int)oldcrc>>8);
 		 //sendline((int)oldcrc);
