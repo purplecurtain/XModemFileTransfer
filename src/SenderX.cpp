@@ -5,8 +5,8 @@
 //% Student 1 userid (email): ntannar@sfu.ca
 //
 //% Student Name 2: Shahira Afrin
-//% Student 2 #: 123456782
-//% Student 2 userid (email): stu2 (stu2@sfu.ca)
+//% Student 2 #: 301236985
+//% Student 2 userid (email): shahiraa@sfu.ca
 //
 //% Below, edit to list any people who helped you with the code in this file,
 //%      or put 'None' if nobody helped (the two of) you.
@@ -17,6 +17,8 @@
 // that you used in making your submission.
 //
 // Resources:  ___________
+//Used the following website to understand how to convert uint16t to two uint8t
+//http://www.avrfreaks.net/forum/converting-uint16t-uint8t
 //
 //%% Instructions:
 //% * Put your name(s), student number(s), userid(s) in the above section.
@@ -61,14 +63,15 @@ void SenderX::genBlk(blkT blkBuf)
 {
 
 //	Each block of the transfer looks like:
-//	          <SOH><blk #><255-blk #><--128 data bytes--><cksum>
+//	          <SOH><blk #><255-blk #><--128 data bytes--><CTRL-Z><cksum>
+//	          <SOH><blk #><255-blk #><--128 data bytes--><CRC MSB ><CRC LSB>
 //	blkBuf is the reverse of that
 
-	if (-1 == (bytesRd = myRead(transferringFileD, &blkBuf[1], CHUNK_SZ )))
-		ErrorPrinter("myRead(transferringFileD, &blkBuf[1], CHUNK_SZ )", __FILE__, __LINE__, errno);
+	if (-1 == (bytesRd = myRead(transferringFileD, &blkBuf[2], CHUNK_SZ )))
+		ErrorPrinter("myRead(transferringFileD, &blkBuf[2], CHUNK_SZ )", __FILE__, __LINE__, errno);
 
 	else if (0 == bytesRd){ //end of file or empty file
-		blkBuf[131] = EOT;
+		blkBuf[132] = EOT;
 	}
 	else {
 
@@ -82,22 +85,35 @@ void SenderX::genBlk(blkT blkBuf)
 		 checksum, is between 0 and 255.  In this case, the checksum
 		 would be 530 - 256 - 256 = 18.*/
 
-		uint8_t checksum = 0;
-
-		for (ssize_t i = 1; i <= bytesRd; i++ )
+		if (Crcflg) //do crc
 		{
-			checksum += blkBuf[i];
+			uint16_t crc = 0;
+			
+			uint8_t* buf = &blkBuf[2];
+			crc16ns(&crc,buf);
+			blkBuf[0] = (uint8_t)crc; //lower byte of crc
+			blkBuf[1] = (uint8_t)(crc >> 8); //upper byte of crc
 		}
-		while (checksum > 255)
-			checksum -= 255;
-		blkBuf[0] = checksum;
+		else //do checksum
+		{
+			uint8_t checksum = 0;
+
+			for (ssize_t i = 1; i <= bytesRd; i++ )
+			{
+				checksum += blkBuf[i];
+			}
+			while (checksum > 255)
+				checksum -= 255;
+			blkBuf[0] = checksum;
+			blkBuf[1] = CTRL_Z;
+		}
 
 		/*The 1's complement of a byte (to make life easy) is simply 255 minus the
 		 byte.  For example, if you had to take the 1's complement of 142, the answer
 		 would be 255 - 142 = 133. */
-		blkBuf[129] = 255 - blkNum;
-		blkBuf[130] = blkNum;
-		blkBuf[131] = SOH;
+		blkBuf[130] = 255 - blkNum;
+		blkBuf[131] = blkNum;
+		blkBuf[132] = SOH;
 
 	}
 
