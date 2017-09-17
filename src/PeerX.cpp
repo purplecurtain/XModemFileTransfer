@@ -4,9 +4,9 @@
 //% Student 1 #: 301258264
 //% Student 1 userid (email): ntannar@sfu.ca
 //
-//% Student Name 2: Shahira Afrin
-//% Student 2 #: 123456782
-//% Student 2 userid (email): stu2 (stu2@sfu.ca)
+//% Student Name 2: Shahira A. Azhar
+//% Student 2 #: 301236985
+//% Student 2 userid (email): shahiraa@sfu.ca
 //
 //% Below, edit to list any people who helped you with the code in this file,
 //%      or put 'None' if nobody helped (the two of) you.
